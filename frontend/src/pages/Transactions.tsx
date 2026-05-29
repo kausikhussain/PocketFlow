@@ -1,7 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { 
   Search, ArrowUpDown, Trash2, Edit2, 
-  ArrowUpRight, ArrowDownRight, RefreshCw, X 
+  ArrowUpRight, ArrowDownRight, RefreshCw, X,
+  Utensils, Car, ShoppingBag, Smartphone, Film, GraduationCap,
+  CreditCard, Landmark, Briefcase, Laptop, Gift, Coins, TrendingUp
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
@@ -18,6 +20,28 @@ const INCOME_CATEGORIES = [
 
 const Transactions: React.FC = () => {
   const { getCurrencySymbol } = useAuth();
+
+  // Helper to map category tags to gorgeous visual icons
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      // Expenses
+      case 'Food': return <Utensils className="h-4.5 w-4.5" />;
+      case 'Travel': return <Car className="h-4.5 w-4.5" />;
+      case 'Shopping': return <ShoppingBag className="h-4.5 w-4.5" />;
+      case 'Recharge': return <Smartphone className="h-4.5 w-4.5" />;
+      case 'Entertainment': return <Film className="h-4.5 w-4.5" />;
+      case 'College': return <GraduationCap className="h-4.5 w-4.5" />;
+      case 'Bills': return <CreditCard className="h-4.5 w-4.5" />;
+      // Incomes
+      case 'Pocket Money': return <Landmark className="h-4.5 w-4.5" />;
+      case 'Salary': return <Briefcase className="h-4.5 w-4.5" />;
+      case 'Freelance': return <Laptop className="h-4.5 w-4.5" />;
+      case 'Gift': return <Gift className="h-4.5 w-4.5" />;
+      case 'Refund': return <RefreshCw className="h-4.5 w-4.5" />;
+      case 'Investment': return <TrendingUp className="h-4.5 w-4.5" />;
+      default: return <Coins className="h-4.5 w-4.5" />;
+    }
+  };
   
   // State variables for list data
   const [transactions, setTransactions] = useState<any[]>([]);
@@ -304,7 +328,16 @@ const Transactions: React.FC = () => {
                       </span>
                     </td>
                     <td className="py-4.5 px-6 font-semibold text-sm text-slate-800 dark:text-white">
-                      {t.category}
+                      <div className="flex items-center gap-2">
+                        <div className={`p-1.5 rounded-lg ${
+                          t.type === 'income' 
+                            ? 'bg-income-50 dark:bg-income-500/10 text-income-500' 
+                            : 'bg-expense-50 dark:bg-expense-500/10 text-expense-500'
+                        }`}>
+                          {getCategoryIcon(t.category)}
+                        </div>
+                        <span>{t.category}</span>
+                      </div>
                     </td>
                     <td className="py-4.5 px-6 text-xs font-semibold text-slate-400 dark:text-zinc-500">
                       {new Date(t.date).toLocaleDateString(undefined, {
@@ -357,7 +390,7 @@ const Transactions: React.FC = () => {
                         ? 'bg-income-50 dark:bg-income-500/10 text-income-500'
                         : 'bg-expense-50 dark:bg-expense-500/10 text-expense-500'
                     }`}>
-                      {t.type === 'income' ? <ArrowUpRight className="h-4.5 w-4.5" /> : <ArrowDownRight className="h-4.5 w-4.5" />}
+                      {getCategoryIcon(t.category)}
                     </div>
                     <div>
                       <h4 className="text-sm font-semibold text-slate-805 dark:text-white text-slate-800">

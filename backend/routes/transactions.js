@@ -152,4 +152,42 @@ router.delete('/:id', protect, async (req, res) => {
   }
 });
 
+// @route   POST api/transactions/mock
+// @desc    Generate mock transactions for testing
+// @access  Private
+router.post('/mock', protect, async (req, res) => {
+  const userId = req.user.id;
+  const now = new Date();
+
+  // Helper to subtract days
+  const subDays = (days) => {
+    const d = new Date();
+    d.setDate(now.getDate() - days);
+    return d;
+  };
+
+  const mockData = [
+    { user: userId, type: 'income', amount: 8000, category: 'Pocket Money', note: 'Monthly allowance from parents', date: subDays(20) },
+    { user: userId, type: 'expense', amount: 450, category: 'Food', note: "Dinner at McDonald's", date: subDays(18) },
+    { user: userId, type: 'expense', amount: 320, category: 'Travel', note: 'Uber ride to college', date: subDays(15) },
+    { user: userId, type: 'income', amount: 2500, category: 'Freelance', note: 'Logo design project', date: subDays(12) },
+    { user: userId, type: 'expense', amount: 1200, category: 'Shopping', note: 'Winter jacket', date: subDays(10) },
+    { user: userId, type: 'expense', amount: 399, category: 'Recharge', note: 'Mobile data plan', date: subDays(9) },
+    { user: userId, type: 'expense', amount: 800, category: 'Entertainment', note: 'Movie tickets', date: subDays(7) },
+    { user: userId, type: 'income', amount: 500, category: 'Refund', note: 'Splitwise returned cash', date: subDays(5) },
+    { user: userId, type: 'expense', amount: 1500, category: 'College', note: 'Textbooks and stationary', date: subDays(4) },
+    { user: userId, type: 'expense', amount: 600, category: 'Bills', note: 'Shared wifi bill', date: subDays(2) },
+    { user: userId, type: 'expense', amount: 180, category: 'Food', note: 'Coffee and snacks', date: now },
+  ];
+
+  try {
+    const created = await Transaction.insertMany(mockData);
+    res.status(201).json(created);
+  } catch (error) {
+    console.error('Mock generation error:', error.message);
+    res.status(500).json({ message: 'Server error, mock generation failed' });
+  }
+});
+
 export default router;
+

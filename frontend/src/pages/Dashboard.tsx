@@ -2,7 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { 
   ArrowDownRight, ArrowUpRight, Calendar, Landmark, 
-  Plus, Minus, RefreshCw, Download, ReceiptText, AlertCircle 
+  Plus, Minus, RefreshCw, Download, ReceiptText, AlertCircle,
+  Utensils, Car, ShoppingBag, Smartphone, Film, GraduationCap,
+  CreditCard, Gift, Briefcase, Laptop, Coins, Sparkles, TrendingUp
 } from 'lucide-react';
 import { useAuth } from '../context/AuthContext';
 import api from '../utils/api';
@@ -28,6 +30,41 @@ const Dashboard: React.FC = () => {
   const [modalOpen, setModalOpen] = useState(false);
   const [modalType, setModalType] = useState<'income' | 'expense'>('expense');
   const [confirmOpen, setConfirmOpen] = useState(false);
+
+  // Helper to map category tags to gorgeous visual icons
+  const getCategoryIcon = (category: string) => {
+    switch (category) {
+      // Expenses
+      case 'Food': return <Utensils className="h-4.5 w-4.5" />;
+      case 'Travel': return <Car className="h-4.5 w-4.5" />;
+      case 'Shopping': return <ShoppingBag className="h-4.5 w-4.5" />;
+      case 'Recharge': return <Smartphone className="h-4.5 w-4.5" />;
+      case 'Entertainment': return <Film className="h-4.5 w-4.5" />;
+      case 'College': return <GraduationCap className="h-4.5 w-4.5" />;
+      case 'Bills': return <CreditCard className="h-4.5 w-4.5" />;
+      // Incomes
+      case 'Pocket Money': return <Landmark className="h-4.5 w-4.5" />;
+      case 'Salary': return <Briefcase className="h-4.5 w-4.5" />;
+      case 'Freelance': return <Laptop className="h-4.5 w-4.5" />;
+      case 'Gift': return <Gift className="h-4.5 w-4.5" />;
+      case 'Refund': return <RefreshCw className="h-4.5 w-4.5" />;
+      case 'Investment': return <TrendingUp className="h-4.5 w-4.5" />;
+      default: return <Coins className="h-4.5 w-4.5" />;
+    }
+  };
+
+  // 1-Click mock data injector handler
+  const handleGenerateMockData = async () => {
+    try {
+      setLoading(true);
+      await api.post('/transactions/mock');
+      await fetchData();
+    } catch (err) {
+      console.error('Failed to generate mock data:', err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   // Fetch initial dashboard data
   const fetchData = async () => {
@@ -311,9 +348,19 @@ const Dashboard: React.FC = () => {
           {loading ? (
             <div className="py-12 text-center text-slate-400">Loading timelines...</div>
           ) : transactions.length === 0 ? (
-            <div className="py-16 text-center">
-              <p className="text-sm font-semibold text-slate-400 dark:text-zinc-500">No transactions recorded yet.</p>
-              <p className="text-xs text-slate-400 dark:text-zinc-500 mt-1">Tap Add Money or Add Expense to start.</p>
+            <div className="py-16 text-center space-y-4">
+              <div>
+                <p className="text-sm font-semibold text-slate-400 dark:text-zinc-500">No transactions recorded yet.</p>
+                <p className="text-xs text-slate-400 dark:text-zinc-500 mt-1">Tap Add Money or Add Expense to start.</p>
+              </div>
+              <div className="pt-2">
+                <button
+                  onClick={handleGenerateMockData}
+                  className="inline-flex items-center gap-1.5 px-4 py-2 rounded-xl bg-brand-50 dark:bg-brand-500/10 text-brand-600 dark:text-brand-400 border border-brand-200/40 dark:border-brand-500/20 text-xs font-bold hover:bg-brand-100 transition-colors"
+                >
+                  <Sparkles className="h-4 w-4" /> Load Demo Data
+                </button>
+              </div>
             </div>
           ) : (
             <div className="space-y-3">
@@ -328,7 +375,7 @@ const Dashboard: React.FC = () => {
                         ? 'bg-income-50 dark:bg-income-500/10 text-income-500' 
                         : 'bg-expense-50 dark:bg-expense-500/10 text-expense-500'
                     }`}>
-                      {t.type === 'income' ? <ArrowUpRight className="h-4.5 w-4.5" /> : <ArrowDownRight className="h-4.5 w-4.5" />}
+                      {getCategoryIcon(t.category)}
                     </div>
                     <div>
                       <h4 className="text-sm font-semibold text-slate-800 dark:text-white leading-tight">
